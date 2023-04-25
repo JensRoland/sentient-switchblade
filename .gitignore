@@ -1,0 +1,7 @@
+*.swp
+package-lock.json
+__pycache__
+.pytest_cache
+.venv
+dist/
+*.egg-info

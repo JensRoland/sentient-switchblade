@@ -1,0 +1,7 @@
+[flake8]
+extend-ignore =
+    # Conflict with Black
+    E203,
+    # Actually bad practice
+    W503
+max-line-length = 110

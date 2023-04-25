@@ -1,0 +1,5 @@
+[switchblade]
+# Bundle can be a local folder or a git repository (with optional subfolder)
+# To use GitHub repositories, you must have GITHUB_TOKEN in your environment variables
+#bundle = "gh:JensRoland/devtool-bundles/python-poetry"
+bundle = "../sentient-switchblade/bundles/python-poetry"

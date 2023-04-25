@@ -1,0 +1,33 @@
+[bundle]
+name = "python-poetry-base"
+project_type = "python-poetry"
+schema_version = "1.0.0"
+
+# Linters
+
+[linters]
+all = ["pylint", "pre-commit"]
+setup = ["pre-commit install"]
+
+[linters.pylint]
+command = "pylint src"
+
+[linters.pre-commit]
+command = "pre-commit run --all-files"
+
+# Extensions to pyproject.toml
+
+[tool.poetry.group.switchblade]
+optional = true
+
+[tool.poetry.group.switchblade.dependencies]
+bandit = "^1.7.5"
+black = "^23.3.0"
+flake8 = "^6.0.0"
+pre-commit = "^3.2.2"
+pylint = "^2.17.2"
+ruff = "^0.0.261"
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B603", "B607"]
