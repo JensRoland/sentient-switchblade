@@ -7,7 +7,6 @@
 
 <h3 align="center"></h3>
 <p align="center">created by <a href="https://jensroland.com/">Jens Roland</a></p>
-<p align="center"><a href="https://kegstand.dev/switchblade/demo">Watch a 3-minute demo</a></p><!-- markdown-link-check-disable-line -->
 
 <br />
 

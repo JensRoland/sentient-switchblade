@@ -4,6 +4,7 @@ import click
 
 from switchbladecli.cli.update import update
 from switchbladecli.cli.lint import lint
+from switchbladecli.cli.test import test
 
 ALIASES = {}
 
@@ -50,7 +51,7 @@ def switchbladecli(
     }
 
 
-for command in [update, lint]:
+for command in [update, lint, test]:
     switchbladecli.add_command(command)
 
 
