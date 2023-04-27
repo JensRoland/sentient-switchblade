@@ -1,6 +1,8 @@
 <!-- markdownlint-disable first-line-h1 line-length no-inline-html -->
 <p align="center">
-  <img src="https://jensroland.com/switchblade/assets/switchblade-logotype.png?" width="415px" alt="Switchblade logo" />
+  <a href="https://github.com/JensRoland/sentient-switchblade">
+    <img src="https://jensroland.com/switchblade/assets/switchblade-logotype.png?" width="415px" alt="Switchblade logo" />
+  </a>
 </p>
 
 <h3 align="center">Unleash Dev Tool Mastery with a Flick of Your Wrist</h3>
