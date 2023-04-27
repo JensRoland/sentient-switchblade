@@ -122,18 +122,11 @@ class Bundle:
             # Get the contents of the repo
             org_name, repo_name, *folder = bundle_source_uri[3:].split("/")
             repo = pygithub.get_repo(f"{org_name}/{repo_name}")
-            repo_contents = repo.get_contents("/".join(folder), ref=remote_version)
-            # If the contents are a folder, download it
-            if repo_contents.type == "dir":
-                for repo_asset in repo_contents:
-                    with open(bundle_folder / repo_asset.name, "wb") as file:
-                        file.write(repo_asset.decoded_content)
-            else:
-                # TODO: Use Click exception/error instead
-                cache.log(f"UPDATING {remote_version} FAILED")
-                raise Exception(
-                    f"Bundle URI {bundle_source_uri} is not a folder. Please use a folder in a Github repo."
-                )
+            repo_contents = repo.get_dir_contents("/".join(folder), ref=remote_version)
+            # Download all the files
+            for repo_asset in repo_contents:
+                with open(bundle_folder / repo_asset.name, "wb") as file:
+                    file.write(repo_asset.decoded_content)
         else:
             # If the source is a local folder, copy it to the cache
             shutil.copytree(bundle_source_uri, bundle_folder)
