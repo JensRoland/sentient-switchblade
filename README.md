@@ -1,8 +1,6 @@
 <!-- markdownlint-disable first-line-h1 line-length no-inline-html -->
 <p align="center">
-  <a href="https://jensroland.com/switchblade">
-    <img src="https://jensroland.com/switchblade/assets/switchblade-logotype.png?" width="415px" alt="Switchblade logo" />
-  </a>
+  <img src="https://jensroland.com/switchblade/assets/switchblade-logotype.png?" width="415px" alt="Switchblade logo" />
 </p>
 
 <h3 align="center">Unleash Dev Tool Mastery with a Flick of Your Wrist</h3>
@@ -57,9 +55,6 @@ In an ideal world, dev tooling would not be checked into version control (*serio
 To achieve this however, you would need some kind of small helper tool to abstract away the fetching, configuring and invoking of your centrally curated 'bundles' of dev tools.
 
 Switchblade is that tool.
-
-Learn more on the [Switchblade project website](https://jensroland.com/switchblade/).
-
 
 ## Custom bundles
 
