@@ -1,11 +1,12 @@
 [tool.poetry]
 name = "sentient-switchblade"
-version = "0.1.0"
+version = "0.1.1"
 description = "Unleash Dev Tool Mastery with a Flick of Your Wrist"
 authors = ["JensRoland <mail@jensroland.com>"]
 license = "MIT"
 repository = "https://github.com/jensroland/sentient-switchblade"
-homepage = "https://kegstand.dev/sentient-switchblade"
+homepage = "https://jensroland.com/sentient-switchblade"
+readme = "README.md"
 packages = [
     { include = "switchbladecli", from = "src" },
 ]
@@ -33,7 +34,7 @@ swb = "switchbladecli.cli.__main__:switchbladecli"
 checksumdir = "^1.2.0"
 click = "^8.0.3"
 PyGithub = "^1.58.1"
-python = "^3.9"
+python = "^3.7"
 tomlkit = "^0.11.7"
 
 [tool.poetry.group.dev.dependencies]
