@@ -7,7 +7,6 @@ schema_version = "1.0.0"
 
 [linters]
 all = ["pylint", "pre-commit"]
-setup = ["pre-commit install"]
 
 [linters.pylint]
 command = "pylint src"
