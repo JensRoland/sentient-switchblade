@@ -81,15 +81,27 @@ class Bundle:
         remote_version = None
         pygithub = None
         if bundle_source_uri.startswith("gh:"):
-            # Init the Github API
-            pygithub = Github(os.environ.get("GITHUB_TOKEN"))
-            # Get the org name, repo name and folder(s)
-            org_name, repo_name, *folder = bundle_source_uri[3:].split("/")
-            # Get the commit SHA from the repo (default branch)
-            repo = pygithub.get_repo(f"{org_name}/{repo_name}")
-            remote_version = repo.get_branch(repo.default_branch).commit.sha
+            try:
+                # Init the Github API
+                pygithub = Github(os.environ.get("GITHUB_TOKEN"))
+                # Get the org name, repo name and folder(s)
+                org_name, repo_name, *folder = bundle_source_uri[3:].split("/")
+                # Get the commit SHA from the repo (default branch)
+                repo = pygithub.get_repo(f"{org_name}/{repo_name}")
+                remote_version = repo.get_branch(repo.default_branch).commit.sha
+            except Exception as exc:
+                # If something went wrong fetching from Github,
+                # we use the latest cached bundle if it exists
+                latest_cached_version = cache.get_latest_version()
+                if latest_cached_version is not None:
+                    click.echo(f"⚔️ Switchblade failed to fetch remote bundle, using cached version {latest_cached_version} instead.")
+                    cache.log(f"FETCH FAILED_WITH_FALLBACK")
+                    return Bundle(self._switchblade_config, latest_cached_version)
+                else:
+                    # If there is no cached bundle, raise the exception
+                    cache.log(f"FETCH FAILED")
+                    raise click.ClickException(f"Remote bundle repo '{bundle_source_uri}' could not be fetched: {exc}")
         else:
-            # TODO: Hash/Checksum the local folder
             # If the folder doesn't exist, raise an exception
             bundle_source_folder = Path(bundle_source_uri)
             if not bundle_source_folder.exists():
@@ -97,19 +109,12 @@ class Bundle:
             remote_version = hash_dir(bundle_source_uri)
 
         cache.log(f"UPDATING {remote_version}")
-
-        # Check if the latest version from the remote is already in the local cache
-        latest_config = cache.get_latest_config()
-        if latest_config is not None and latest_config["commit_sha"] == remote_version:
-            # If the latest cached bundle is up to date, just return it
-            click.echo(f"⚔️ Switchblade cache already up to date at version {remote_version}")
-            cache.log(f"UPDATING {remote_version} NO_CHANGE")
-            return Bundle(self._switchblade_config, latest_config["commit_sha"])
         
-        # Check if the latest version from the remote is already sitting in an old folder
+        # Check if the latest version from the remote is already cached
+        # (does not necessarily have to be the most recently fetched bundle from 'latest.toml')
         if cache.has_bundle(remote_version):
             # If the latest cached bundle is up to date, just return it
-            click.echo(f"⚔️ Switchblade cache already up to date at version {remote_version}")
+            click.echo(f"⚔️ Switchblade cache already contains version {remote_version}")
             cache.log(f"UPDATING {remote_version} USING_CACHED")
             return Bundle(self._switchblade_config, remote_version)
 
