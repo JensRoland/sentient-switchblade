@@ -3,6 +3,7 @@ import click
 import shutil
 import subprocess  # nosec
 
+from mergedeep import merge
 from tomlkit import dumps, loads
 
 from switchbladecli.cli.bundle_cache import Bundle, BundleCache
@@ -89,26 +90,6 @@ class PythonPoetry:
         return pushed_files
 
 
-    # TODO: Place this in a superclass
-    def run_linters(self, bundle: Bundle):
-        succeeded = True
-        for linter in bundle.bundle_config["linters"]["all"]:
-            print(f"⚔️ Switchblade running {linter}...")
-            succeeded = succeeded and self.run_linter(bundle, bundle.bundle_config["linters"][linter])
-            self._cache.log(f"RAN {linter}")
-        return succeeded
-
-
-    # TODO: Place this in a superclass
-    def run_tests(self, bundle: Bundle):
-        succeeded = True
-        for test in bundle.bundle_config["tests"]["all"]:
-            print(f"⚔️ Switchblade running {test}...")
-            succeeded = succeeded and self.run_test(bundle, bundle.bundle_config["tests"][test])
-            self._cache.log(f"RAN {test}")
-        return succeeded
-
-
     # TODO: Make this an override (must return False if the linter fails)
     def run_linter(self, bundle: Bundle, linter: dict):
         linter_command_list = linter["command"].split(" ")
@@ -140,7 +121,7 @@ class PythonPoetry:
 
 
     # TODO: Place this in a superclass
-    def lint(self):
+    def lint(self, linter_tool: str):
         # Instantiating a Bundle object will fetch the latest bundle from the source or cache
         latest_bundle = Bundle(self._config)
 
@@ -156,6 +137,15 @@ class PythonPoetry:
 
         self._cache.log(f"LINTING {latest_bundle.version}")
 
+        # Show error message if the bundle does not contain any linters
+        if "linters" not in bundle_config:
+            self._cache.log(f"LINTING {latest_bundle.version} ABORTED_NO_LINTERS_IN_BUNDLE")
+            click.secho(
+                "⚔️ The Switchblade bundle does not contain any linters.",
+                err=True, fg="red"
+            )
+            raise click.Abort()
+
         pushed_files = []
         success = False
         try:
@@ -165,11 +155,20 @@ class PythonPoetry:
             print("⚔️ Switchblade copying configuration...")
             pushed_files = self.copy_config_files(latest_bundle)
 
-            success = self.run_linters(latest_bundle)
+            # Apply local overrides from .switchblade (merging the linter dicts) if any
+            switchblade_linters_config = self._config["linters"] if "linters" in self._config else {}
+            merged_linters_config = merge({}, bundle_config["linters"], switchblade_linters_config)
 
-        except Exception:
+            success = True
+            linter_names = merged_linters_config[linter_tool] if linter_tool == "all" else [linter_tool]
+            for linter_name in linter_names:
+                print(f"⚔️ Switchblade running {linter_name}...")
+                success = success and self.run_linter(latest_bundle, merged_linters_config[linter_name])
+                self._cache.log(f"RAN {linter_name}")
+
+        except Exception as exc:
             self._cache.log(f"LINTING {latest_bundle.version} FAILED_WITH_EXCEPTION")
-            raise click.ClickException("Exception detected while running linters, aborting...")
+            raise click.ClickException(f"Exception detected while running linters, aborting... {exc}")
 
         finally:
             print("⚔️ Switchblade cleaning up...")
@@ -189,7 +188,7 @@ class PythonPoetry:
 
 
     # TODO: Place this in a superclass
-    def test(self):
+    def test(self, test_tool: str):
         # Instantiating a Bundle object will fetch the latest bundle from the source or cache
         latest_bundle = Bundle(self._config)
 
@@ -205,6 +204,15 @@ class PythonPoetry:
 
         self._cache.log(f"TESTING {latest_bundle.version}")
 
+        # Show error message if the bundle does not contain any linters
+        if "tests" not in bundle_config:
+            self._cache.log(f"TESTING {latest_bundle.version} ABORTED_NO_TESTS_IN_BUNDLE")
+            click.secho(
+                "⚔️ The Switchblade bundle does not contain any tests.",
+                err=True, fg="red"
+            )
+            raise click.Abort()
+
         pushed_files = []
         success = False
         try:
@@ -214,11 +222,21 @@ class PythonPoetry:
             print("⚔️ Switchblade copying configuration...")
             pushed_files = self.copy_config_files(latest_bundle)
 
-            success = self.run_tests(latest_bundle)
+            # Apply local overrides from .switchblade (merging the tests dicts) if any
+            bundle_tests_config = bundle_config["tests"]
+            switchblade_tests_config = self._config["tests"] if "tests" in self._config else {}
+            merged_tests_config = merge({}, bundle_tests_config, switchblade_tests_config)
 
-        except Exception:
+            success = True
+            test_tool_names = merged_tests_config[test_tool] if test_tool == "all" else [test_tool]
+            for test_tool_name in test_tool_names:
+                print(f"⚔️ Switchblade running {test_tool_name}...")
+                success = success and self.run_test(latest_bundle, merged_tests_config[test_tool_name])
+                self._cache.log(f"RAN {test_tool_name}")
+
+        except Exception as exc:
             self._cache.log(f"TESTING {latest_bundle.version} FAILED_WITH_EXCEPTION")
-            raise click.ClickException("Exception detected while running tests, aborting...")
+            raise click.ClickException(f"Exception detected while running tests, aborting... {exc}")
 
         finally:
             print("⚔️ Switchblade cleaning up...")

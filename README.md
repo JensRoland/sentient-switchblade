@@ -6,7 +6,7 @@
 </p>
 
 <h3 align="center">Unleash Dev Tool Mastery with a Flick of Your Wrist</h3>
-<p align="center">created by <a href="https://jensroland.com/">Jens Roland</a></p>
+<p align="center">Created by <a href="https://jensroland.com/">Jens Roland</a></p>
 
 <br />
 
@@ -94,7 +94,17 @@ pytest = "^7.3.1"
 pythonpath = "src"
 ```
 
-And in the same repo folder, add any config files you need, e.g. `.pylintrc`:
+For each linter you want to add, specify a `[linters.<toolname>]` section with a `command` key. The `command` value will be invoked by Switchblade when you run `swb lint <toolname>`.
+
+The `[linters]` section specifies which linters should be invoked (and in which order) when you run `swb lint` or `swb lint all`.
+
+The same goes for tests: specify a `[tests.<toolname>]` section with a `command` key, and add the tool to the `[tests]` section to have it invoked when you run `swb test` or `swb test all`.
+
+### Tool configuration
+
+Anything in the `bundle.toml` file under a `tool.*` section will be temporarily added to the project's `pyproject.toml` file under that section. This allows you to add dependencies and configuration options to all your projects without having to manually edit all the individual `pyproject.toml` files.
+
+If you prefer having separate config files, or for tools which do not support `pyproject.toml` configuration, simply add any config files you need in the same folder as the `bundle.toml` file. E.g. you might define a `.pylintrc` in the bundle repo:
 
 ```ini
 [MAIN]
@@ -107,9 +117,13 @@ disable=
     W0613,  # unused-argument
 ```
 
-Now when you want to use your custom bundle in a project, simply point to the repo in the project `.switchblade` file as in the example above. Swtichblade will then fetch and install the tools you specified in the bundle and run them with the configurations you specified.
+Now, when you want to use your custom dev tool bundle in a project, simply point to the repo in the project `.switchblade` file as in the example above. Swichblade will then fetch and install the tools you specified in the bundle and run them with the configurations you specified.
 
-Anything in the `bundle.toml` file under a `tool.*` section will be temporarily added to the project's `pyproject.toml` file under the same section. This allows you to add dependencies and configuration options to all your projects without having to manually edit all the individual `pyproject.toml` files.
+### Per-project overrides
+
+To override the bundle configuration for a specific dev tool in one of your project repos, simply check in the tool dependencies and configuration files in the project repo as you normally would - Switchblade will still invoke the dev tool, but it will not overwrite any existing config files or `[tool.*]` sections in your `pyproject.toml` file. Be aware that this does not 'extend' the configuration from the bundle, but replaces that tool configuration entirely, so this feature should be used with caution.
+
+To override the command or the list of linters to run, add the corresponding sections (e.g. `[linters]` or `[linters.pylint]` in the project `.switchblade` file. Switchblade will automatically merge (in this case it does extend rather than replace) the bundle config and Switchblade config before invoking any of the tools.
 
 ## Prerequisites
 
