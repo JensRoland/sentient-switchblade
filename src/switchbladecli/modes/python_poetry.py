@@ -3,6 +3,7 @@ import click
 import shutil
 import subprocess  # nosec
 
+from datetime import datetime, timezone
 from mergedeep import merge
 from tomlkit import dumps, loads
 
@@ -11,7 +12,7 @@ from switchbladecli.cli.bundle_cache import Bundle, BundleCache
 
 class PythonPoetry:
 
-    RESET_LOCKFILE_ON_CLEANUP = False
+    SKIP_UPDATE_IF_INSTALLED_WITHIN = 60*60*24  # 24 hours
     mode = "python-poetry"
 
     def __init__(self, config: dict, verbose: bool):
@@ -35,11 +36,7 @@ class PythonPoetry:
         pyproject_config["tool"]["poetry"]["group"][
             "switchblade"
         ] = bundle.bundle_config["tool"]["poetry"]["group"]["switchblade"]
-        # pyproject_config["tool"]["poetry"]["group"]["switchblade"][
-        #     "dependencies"
-        # ] = bundle.bundle_config["tool"]["poetry"]["group"]["switchblade"][
-        #     "dependencies"
-        # ]
+
         # Also take all other sections beginning with 'tool.' and add them to the pyproject.toml
         # unless there is already a section with the same name in the pyproject.toml
         for section in bundle.bundle_config["tool"]:
@@ -50,17 +47,16 @@ class PythonPoetry:
         with open(self._pyproject_file, "w") as pyproject_toml:
             pyproject_toml.write(dumps(pyproject_config))
 
-        lock_check = subprocess.run(
-            ["poetry", "lock", "--check"],
-            cwd=self._project_folder,
-            check=False,
-            capture_output=True,
-        )
-
-        # If the lock file is up to date, we can optimistically skip the update
-        if lock_check.returncode == 0:
-            print("🔒 poetry.lock is up to date, install skipped")
-            return
+        # If the bundle was recently installed, we can optimistically skip the update
+        latest_config = self._cache.get_latest_config()
+        last_installed_on = latest_config["last_installed_on"]
+        print(f"last_installed_on: {last_installed_on}")
+        if last_installed_on:
+            last_installed_on = datetime.strptime(last_installed_on, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+            current_datetime = datetime.now(tz=timezone.utc)
+            if (current_datetime - last_installed_on).total_seconds() < self.SKIP_UPDATE_IF_INSTALLED_WITHIN:
+                print("🔒 bundle dependencies were recently installed, skipping...")
+                return
 
         subprocess.run(
             ["poetry", "update", "--only", "switchblade"],
@@ -68,6 +64,10 @@ class PythonPoetry:
             check=True,
             capture_output=False,
         )
+
+        self._cache.update_latest_config({
+            "last_installed_on": datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+        })
 
 
     # TODO: Place this in a superclass
@@ -115,7 +115,7 @@ class PythonPoetry:
             with open(self._pyproject_file, "w") as pyproject_toml:
                 pyproject_toml.write(self._pyproject_file_raw_before)
         # Restore the original poetry.lock
-        if self.RESET_LOCKFILE_ON_CLEANUP and self._poetry_lockfile_raw_before:
+        if self._poetry_lockfile_raw_before:
             with open(self._poetry_lockfile, "w") as poetry_lock:
                 poetry_lock.write(self._poetry_lockfile_raw_before)
 

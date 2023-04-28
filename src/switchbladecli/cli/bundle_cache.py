@@ -4,6 +4,7 @@ import shutil
 
 from datetime import datetime, timezone
 from github import Github
+from mergedeep import merge
 from pathlib import Path
 from tomlkit import dumps, loads
 
@@ -39,7 +40,6 @@ class Bundle:
             self.version = bundle.version
             self.bundle_folder = bundle.bundle_folder
             self.bundle_config = bundle.bundle_config
-            cache.set_latest_config(bundle)
 
         else:
             self.version = version
@@ -115,7 +115,7 @@ class Bundle:
         if cache.has_bundle(remote_version):
             # If the latest cached bundle is up to date, just return it
             click.echo(f"⚔️ Switchblade cache already contains version {remote_version}")
-            cache.log(f"UPDATING {remote_version} USING_CACHED")
+            cache.log(f"UPDATING {remote_version} SKIPPED_ALREADY_CACHED")
             return Bundle(self._switchblade_config, remote_version)
 
         # If the cache is stale, update it
@@ -138,8 +138,11 @@ class Bundle:
 
         cache.log(f"UPDATING {remote_version} SUCCEEDED")
 
-        # Finally, return the cached bundle
-        return Bundle(self._switchblade_config, remote_version)
+        new_bundle = Bundle(self._switchblade_config, remote_version)
+        cache.set_latest_config(new_bundle)
+
+        # Finally, return the fetched bundle
+        return new_bundle
 
 
 class BundleCache:
@@ -218,9 +221,25 @@ class BundleCache:
                     {
                         "latest": {
                             "commit_sha": bundle.version,
-                            "timestamp": datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+                            "fetched_on": datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
                             "files": bundle.get_files(),
+                            "last_installed_on": ""
                         }
+                    }
+                )
+            )
+
+
+    def update_latest_config(self, updated_latest: dict):
+        """Update the latest config, merging with updated dict."""
+        latest_config_file = self._get_latest_config_file(False)
+        latest_config = self.get_latest_config()
+        merge(latest_config, updated_latest)
+        with open(latest_config_file, "w") as latest_toml:
+            latest_toml.write(
+                dumps(
+                    {
+                        "latest": latest_config
                     }
                 )
             )
