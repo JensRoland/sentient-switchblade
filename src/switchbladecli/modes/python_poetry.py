@@ -50,7 +50,6 @@ class PythonPoetry:
         # If the bundle was recently installed, we can optimistically skip the update
         latest_config = self._cache.get_latest_config()
         last_installed_on = latest_config["last_installed_on"]
-        print(f"last_installed_on: {last_installed_on}")
         if last_installed_on:
             last_installed_on = datetime.strptime(last_installed_on, "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
             current_datetime = datetime.now(tz=timezone.utc)
