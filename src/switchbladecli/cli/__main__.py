@@ -2,13 +2,12 @@ import os
 
 import click
 
-from switchbladecli.cli.update import update
+from switchbladecli.cli.config import find_config_file, get_switchblade_config
 from switchbladecli.cli.lint import lint
 from switchbladecli.cli.test import test
+from switchbladecli.cli.update import update
 
 ALIASES = {}
-
-CONFIG_FILE_NAMES = [".switchblade", "switchblade.toml"]
 
 
 class AliasedGroup(click.Group):
@@ -23,29 +22,25 @@ class AliasedGroup(click.Group):
 # We pass the project directory to all subcommands via the context
 # so they can use it to find the switchblade.toml file
 @click.group(cls=AliasedGroup)
-@click.option("--config", help="Path to Switchblade configuration file.")
+@click.option("--config", "config_file" help="Path to Switchblade configuration file.")
 @click.option("--verbose", is_flag=True, default=False, help="Show verbose output")
 @click.pass_context
 def switchbladecli(
-    ctx, config, verbose
+    ctx, config_file, verbose
 ): 
     """Sentient Switchblade
 
     A part of the Beth Developer Toolbelt
     """
-    # Locate the correct Kegstand configuration file
-    if config is None:
-        for name in CONFIG_FILE_NAMES:
-            if os.path.exists(name):
-                config = name
-                break
+    config_file = find_config_file(verbose, config_file)
 
-    if not os.path.exists(config):
-        raise click.ClickException(f"Configuration file not found: {config}")
+    project_dir = os.path.abspath(os.path.dirname(config_file))
 
-    project_dir = os.path.abspath(os.path.dirname(config))
+    config = get_switchblade_config(verbose, project_dir, config_file)
+
     ctx.obj = {
-        "config": os.path.abspath(config),
+        "config": config,
+        "config_file": os.path.abspath(config_file),
         "project_dir": project_dir,
         "verbose": verbose,
     }

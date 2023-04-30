@@ -1,7 +1,6 @@
 import click
 
 from switchbladecli.modes.python_poetry import PythonPoetry
-from switchbladecli.cli.config import get_switchblade_config
 
 
 @click.command()
@@ -13,14 +12,12 @@ def test(ctx, test: str):
     TEST: Testing tool to run. If not specified, all testing tools will be run.
     """
     project_dir = ctx.obj["project_dir"]
-    config_file = ctx.obj["config"]
+    config = ctx.obj["config"]
     verbose = ctx.obj["verbose"]
-    test_command(verbose, project_dir, config_file, test)
+    test_command(verbose, project_dir, config, test)
 
 
-def test_command(verbose: bool, project_dir: str, config_file: str, test_tool: str = "all"):
-    config = get_switchblade_config(verbose, project_dir, config_file)
-
+def test_command(verbose: bool, project_dir: str, config: dict, test_tool: str = "all"):
     if test_tool is None:
         test_tool = "all"
 
