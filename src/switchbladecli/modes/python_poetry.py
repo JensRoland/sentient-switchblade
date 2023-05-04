@@ -167,7 +167,7 @@ class PythonPoetry:
             merged_linters_config = merge({}, bundle_config["linters"], switchblade_linters_config)
 
             success = True
-            linter_names = merged_linters_config[linter_tool] if linter_tool == "all" else [linter_tool]
+            linter_names = merged_linters_config["all"] if linter_tool in ["all", None] else [linter_tool]
             for linter_name in linter_names:
                 print(f"⚔️ Switchblade running {linter_name}...")
                 success = success and self.run_linter(latest_bundle, merged_linters_config[linter_name])
@@ -235,7 +235,7 @@ class PythonPoetry:
             merged_tests_config = merge({}, bundle_tests_config, switchblade_tests_config)
 
             success = True
-            test_tool_names = merged_tests_config[test_tool] if test_tool == "all" else [test_tool]
+            test_tool_names = merged_tests_config["all"] if test_tool in ["all", None] else [test_tool]
             for test_tool_name in test_tool_names:
                 print(f"⚔️ Switchblade running {test_tool_name}...")
                 success = success and self.run_test(latest_bundle, merged_tests_config[test_tool_name])
