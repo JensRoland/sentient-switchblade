@@ -170,7 +170,8 @@ class PythonPoetry:
             linter_names = merged_linters_config["all"] if linter_tool in ["all", None] else [linter_tool]
             for linter_name in linter_names:
                 print(f"⚔️ Switchblade running {linter_name}...")
-                success = success and self.run_linter(latest_bundle, merged_linters_config[linter_name])
+                linter_success = self.run_linter(latest_bundle, merged_linters_config[linter_name])
+                success = success and linter_success
                 self._cache.log(f"RAN {linter_name}")
 
         except Exception as exc:
@@ -238,7 +239,8 @@ class PythonPoetry:
             test_tool_names = merged_tests_config["all"] if test_tool in ["all", None] else [test_tool]
             for test_tool_name in test_tool_names:
                 print(f"⚔️ Switchblade running {test_tool_name}...")
-                success = success and self.run_test(latest_bundle, merged_tests_config[test_tool_name])
+                test_success = self.run_test(latest_bundle, merged_tests_config[test_tool_name])
+                success = success and test_success
                 self._cache.log(f"RAN {test_tool_name}")
 
         except Exception as exc:
