@@ -1,0 +1,3 @@
+[switchblade]
+mode = "test-not-a-valid-mode"
+bundle = "gh:jensroland/sentient-switchblade/bundles/python-poetry-base"

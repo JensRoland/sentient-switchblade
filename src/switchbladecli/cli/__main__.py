@@ -22,7 +22,7 @@ class AliasedGroup(click.Group):
 # We pass the project directory to all subcommands via the context
 # so they can use it to find the switchblade.toml file
 @click.group(cls=AliasedGroup)
-@click.option("--config", "config_file" help="Path to Switchblade configuration file.")
+@click.option("--config", "config_file", help="Path to Switchblade configuration file.")
 @click.option("--verbose", is_flag=True, default=False, help="Show verbose output")
 @click.pass_context
 def switchbladecli(

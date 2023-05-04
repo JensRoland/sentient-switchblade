@@ -1,6 +1,7 @@
 import click
 
-from switchbladecli.modes.python_poetry import PythonPoetry
+from operator import itemgetter
+from switchbladecli.modes.tool_runner import get_tool_runner
 
 
 @click.command()
@@ -11,24 +12,10 @@ def test(ctx, test: str):
     
     TEST: Testing tool to run. If not specified, all testing tools will be run.
     """
-    project_dir = ctx.obj["project_dir"]
-    config = ctx.obj["config"]
-    verbose = ctx.obj["verbose"]
-    test_command(verbose, project_dir, config, test)
+    project_dir, config, verbose = itemgetter("project_dir", "config", "verbose")(ctx.obj)
+    cmd_test(verbose, project_dir, config, test)
 
 
-def test_command(verbose: bool, project_dir: str, config: dict, test_tool: str = "all"):
-    if test_tool is None:
-        test_tool = "all"
-
-    mode = config["switchblade"]["mode"]
-
-    tool_runner = None
-    if mode == "python-poetry":
-        tool_runner = PythonPoetry(config, verbose)
-    else:
-        raise click.ClickException(
-            f"Invalid project mode {mode} specified."
-        )
-
+def cmd_test(verbose: bool, project_dir: str, config: dict, test_tool: str = "all"):
+    tool_runner = get_tool_runner(config)(config, verbose)
     tool_runner.test(test_tool)

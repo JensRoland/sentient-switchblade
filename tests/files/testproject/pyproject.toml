@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "switchblade-test-project"
+description = "A test project for Switchblade"
+authors = ["Jens Roland <mail@jensroland.com>"]
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.group.dev.dependencies]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

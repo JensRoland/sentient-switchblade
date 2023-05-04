@@ -136,3 +136,17 @@ Currently, you need Python since you install Switchblade with pip. This may chan
 - CLI command `swb lint` to run linters
 - CLI command `swb test` to run tests
 - Project 'modes' supported: Currently only `python-poetry` is supported, but more will be added soon.
+
+## Development
+
+Install dependencies:
+
+```shell
+> poetry install
+```
+
+Run unit tests:
+
+```shell
+> poetry run pytest -c pyproject.toml --cov-report=term --cov=src tests
+```

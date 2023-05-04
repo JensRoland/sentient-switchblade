@@ -1,6 +1,7 @@
 import hashlib
 import os
 
+
 def sha1OfFile(filepath, use_sha):
     with open(filepath, 'rb') as f:
         while True:
@@ -9,9 +10,9 @@ def sha1OfFile(filepath, use_sha):
             use_sha.update(block)
         return use_sha.hexdigest()
 
-def hash_dir(dir_path, use_sha=None):
+def hash_dir(dir_path, existing_sha=None):
     for path, dirs, files in os.walk(dir_path):
-        sha = use_sha or hashlib.sha1()
+        sha = existing_sha or hashlib.sha1()
         for file in sorted(files): # we sort to guarantee that files will always go in the same order
             sha1OfFile(os.path.join(path, file), sha)
         for dir in sorted(dirs): # we sort to guarantee that dirs will always go in the same order

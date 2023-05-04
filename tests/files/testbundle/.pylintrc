@@ -1,0 +1,47 @@
+[MAIN]
+
+[MESSAGES CONTROL]
+
+disable=
+    C0103,  # invalid-name
+    C0111,  # missing-docstring
+    C0114,  # missing-module-docstring
+    C0115,  # missing-class-docstring
+    C0116,  # missing-function-docstring
+    C0301,  # line-too-long (handled by flake8)
+    R0903,  # too-few-public-methods
+    R0913,  # too-many-arguments
+    R1705,  # no-else-return
+    W0511,  # fixme
+    W0613,  # unused-argument
+    W0621,  # redefined-outer-name
+    W0622,  # redefined-builtin
+    W0703,  # broad-except
+    W1505,  # deprecated-method
+    E1101,  # no-member
+    E1102,  # not-callable
+    E1120,  # no-value-for-parameter
+    E1121,  # too-many-function-args
+    E1123,  # unexpected-keyword-arg
+    E1124,  # unused-argument
+    E1125,  # missing-kwoa
+    E1126,  # invalid-sequence-index
+    E1127,  # invalid-slice-index
+    E1128,  # assignment-from-no-return
+    E1129,  # not-context-manager
+    E1130,  # invalid-unary-operand-type
+    E1131,  # unsupported-binary-operation
+    E1132,  # repeated-keyword
+    E1133,  # not-an-iterable
+    E1134,  # not-a-mapping
+    E1135,  # unsupported-membership-test
+    E1136,  # unsubscriptable-object
+    E1137,  # unsupported-assignment-operation
+    E1138,  # unsupported-delete-operation
+    E1139,  # invalid-metaclass-operation
+    E1140,  # unhashable-dict-key
+
+[SIMILARITIES]
+
+min-similarity-lines=10
+ignore-imports=yes

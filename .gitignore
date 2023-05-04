@@ -2,6 +2,7 @@
 *.swp
 package-lock.json
 __pycache__
+.coverage
 .pytest_cache
 .venv
 dist/

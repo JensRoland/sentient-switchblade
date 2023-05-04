@@ -35,6 +35,7 @@ class Bundle:
         """
         self._switchblade_config = switchblade_config
         if version is None:
+            click.echo("⚔️ Switchblade initializing bundle...")
             cache = BundleCache(self._switchblade_config)
             bundle = self._fetch_latest(cache)
             self.version = bundle.version
@@ -42,6 +43,7 @@ class Bundle:
             self.bundle_config = bundle.bundle_config
 
         else:
+            click.echo(f"⚔️ Switchblade initializing bundle with version {version}...")
             self.version = version
             self.bundle_folder = self._bundle_folder_from_version(version)
             self.bundle_config = self._load_bundle_config()
@@ -54,7 +56,7 @@ class Bundle:
             bundle_config_file = self.bundle_folder / bundle_config_file_name
             if bundle_config_file.exists():
                 break
-        if bundle_config_file is None:
+        if bundle_config_file is None or not bundle_config_file.exists():
             raise FileNotFoundError(f"No bundle config file found in bundle {self.version}")
         return loads(bundle_config_file.read_text(encoding="utf-8"))
     
@@ -62,6 +64,7 @@ class Bundle:
     def _bundle_folder_from_version(self, version) -> Path:
         """Get the bundle folder."""
         return Path(CACHE_FOLDERNAME) / version
+
 
     def get_files(self) -> list:
         """Get the list of files (excluding the config) in the bundle.
@@ -127,11 +130,12 @@ class Bundle:
             # Get the contents of the repo
             org_name, repo_name, *folder = bundle_source_uri[3:].split("/")
             repo = pygithub.get_repo(f"{org_name}/{repo_name}")
-            repo_contents = repo.get_dir_contents("/".join(folder), ref=remote_version)
+            repo_contents = repo.get_contents("/".join(folder), ref=remote_version)
             # Download all the files
             for repo_asset in repo_contents:
                 with open(bundle_folder / repo_asset.name, "wb") as file:
                     file.write(repo_asset.decoded_content)
+
         else:
             # If the source is a local folder, copy it to the cache
             shutil.copytree(bundle_source_uri, bundle_folder)

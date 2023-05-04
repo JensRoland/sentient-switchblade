@@ -24,6 +24,11 @@ class PythonPoetry:
 
     # TODO: Make this an override
     def install_dev_tools(self, bundle: Bundle):
+        # Check for a virtualenv and return an error if one is not found
+        check_env = subprocess.run(["poetry", "env", "info", "--path"], cwd=self._project_folder, check=False, capture_output=True)  # nosec
+        if check_env.returncode != 0:
+            raise click.ClickException("No virtualenv found. Please run `poetry install` first.")
+
         # Read pyproject.toml and remove the sections [tool.poetry.group.switchblade]
         # and [tool.poetry.group.switchblade.dependencies], and add the ones from the
         # bundle.toml file in the commit SHA folder
@@ -31,7 +36,10 @@ class PythonPoetry:
         self._poetry_lockfile = self._project_folder / "poetry.lock"
 
         self._pyproject_file_raw_before = self._pyproject_file.read_text(encoding="utf-8")
-        self._poetry_lockfile_raw_before = self._poetry_lockfile.read_text(encoding="utf-8")  # TODO: handle missing file
+        if self._poetry_lockfile.exists():
+            self._poetry_lockfile_raw_before = self._poetry_lockfile.read_text(encoding="utf-8")
+        else:
+            self._poetry_lockfile_raw_before = None
         pyproject_config = loads(self._pyproject_file_raw_before)
         pyproject_config["tool"]["poetry"]["group"][
             "switchblade"

@@ -1,0 +1,40 @@
+[bundle]
+name = "dummy-bundle"
+mode = "python-poetry"
+schema_version = "1.0.0"
+
+# Linters
+
+[linters]
+all = ["pylint"]
+
+[linters.pylint]
+command = "pylint src"
+
+# Tests
+
+[tests]
+all = ["pytest"]
+
+[tests.pytest]
+command = "pytest -c pyproject.toml --cov-report=term --cov=src tests"
+
+# Extensions to pyproject.toml
+
+[tool.poetry.group.switchblade]
+optional = true
+
+[tool.poetry.group.switchblade.dependencies]
+pylint = "^2.17.2"
+pytest = "^7.3.1"
+pytest-cov = "^4.0.0"
+
+[tool.pytest.ini_options]
+# Directories that are not visited by pytest collector:
+norecursedirs =["hooks", "*.egg", ".eggs", "dist", "build", "docs", ".tox", ".git", "__pycache__"]
+pythonpath = "src"
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+skip_empty = true

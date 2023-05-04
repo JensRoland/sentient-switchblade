@@ -1,0 +1,52 @@
+[bundle]
+name = "python-poetry-base"
+mode = "python-poetry"
+schema_version = "1.0.0"
+
+# Linters
+
+[linters]
+all = ["pylint", "pre-commit"]
+
+[linters.pylint]
+command = "pylint src"
+
+[linters.pre-commit]
+command = "pre-commit run --all-files"
+
+# Tests
+
+[tests]
+all = ["pytest"]
+
+[tests.pytest]
+command = "pytest -c pyproject.toml --cov-report=term --cov=src tests"
+
+# Extensions to pyproject.toml
+
+[tool.poetry.group.switchblade]
+optional = true
+
+[tool.poetry.group.switchblade.dependencies]
+bandit = "^1.7.5"
+black = "^23.3.0"
+flake8 = "^6.0.0"
+pre-commit = "^3.2.2"
+pylint = "^2.17.2"
+pytest = "^7.3.1"
+pytest-cov = "^4.0.0"
+ruff = "^0.0.261"
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B603", "B607"]
+
+[tool.pytest.ini_options]
+# Directories that are not visited by pytest collector:
+norecursedirs =["hooks", "*.egg", ".eggs", "dist", "build", "docs", ".tox", ".git", "__pycache__"]
+pythonpath = "src"
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+skip_empty = true

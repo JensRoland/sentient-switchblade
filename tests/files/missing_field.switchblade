@@ -1,0 +1,2 @@
+[switchblade]
+bundle = "gh:jensroland/sentient-switchblade/bundles/python-poetry-base"
