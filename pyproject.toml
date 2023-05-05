@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sentient-switchblade"
-version = "0.3.2"
+version = "0.3.3"
 description = "Unleash Dev Tool Mastery with a Flick of Your Wrist"
 authors = ["JensRoland <mail@jensroland.com>"]
 license = "MIT"
