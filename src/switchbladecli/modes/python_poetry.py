@@ -169,8 +169,9 @@ class PythonPoetry:
             success = True
             linter_names = merged_linters_config["all"] if linter_tool in ["all", None] else [linter_tool]
             for linter_name in linter_names:
-                print(f"⚔️ Switchblade running {linter_name}...")
+                print(f"⚔️ Switchblade running {linter_name}...", end=" ")
                 linter_success = self.run_linter(latest_bundle, merged_linters_config[linter_name])
+                print("✅" if linter_success else "❌")
                 success = success and linter_success
                 self._cache.log(f"RAN {linter_name}")
 
@@ -193,6 +194,8 @@ class PythonPoetry:
         else:
             self._cache.log(f"LINTING {latest_bundle.version} FINISHED_WITH_ERRORS")
             click.secho("⚔️ Linting finished with errors. 😭", err=True, fg="red", bold=True)
+
+        return success
 
 
     # TODO: Place this in a superclass
@@ -238,8 +241,9 @@ class PythonPoetry:
             success = True
             test_tool_names = merged_tests_config["all"] if test_tool in ["all", None] else [test_tool]
             for test_tool_name in test_tool_names:
-                print(f"⚔️ Switchblade running {test_tool_name}...")
+                print(f"⚔️ Switchblade running {test_tool_name}...", end = " ")
                 test_success = self.run_test(latest_bundle, merged_tests_config[test_tool_name])
+                print("✅" if test_success else "❌")
                 success = success and test_success
                 self._cache.log(f"RAN {test_tool_name}")
 
@@ -262,3 +266,5 @@ class PythonPoetry:
         else:
             self._cache.log(f"TESTING {latest_bundle.version} FINISHED_WITH_ERRORS")
             click.secho("⚔️ Tests finished with errors. 😭", err=True, fg="red", bold=True)
+
+        return success
