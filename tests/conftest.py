@@ -4,10 +4,14 @@ from pathlib import Path
 import pytest
 import shutil
 
+from distutils.dir_util import copy_tree
 from unittest.mock import MagicMock, Mock, patch
 
 AWS_TEST_REGION = "eu-west-1"
 
+
+def copytree_posix(posix_path_from, posix_path_to):
+    return copy_tree(str(posix_path_from), str(posix_path_to))
 
 def pytest_configure(config: pytest.Config) -> None:
     """Mocked AWS Credentials to prevent accidental side effects in the cloud."""
@@ -23,7 +27,7 @@ def project(tmp_path):
     # Copy the contents of tests/project to the temp folder
     test_project_dir = os.path.join(os.path.dirname(__file__), "files", "testproject")
     project_dir = tmp_path
-    shutil.copytree(test_project_dir, project_dir, dirs_exist_ok=True)
+    copytree_posix(test_project_dir, project_dir)
 
     # Set the current working directory to the temp folder
     os.chdir(tmp_path)
@@ -38,12 +42,12 @@ def project_with_cached_bundle(tmp_path):
     # Copy the contents of tests/project to the temp folder
     test_project_dir = os.path.join(os.path.dirname(__file__), "files", "testproject")
     project_dir = tmp_path
-    shutil.copytree(test_project_dir, project_dir, dirs_exist_ok=True)
+    copytree_posix(test_project_dir, project_dir)
 
     # Copy the folder in files/previous.switchblade-cache to the temp folder
     test_cache_dir = os.path.join(os.path.dirname(__file__), "files", "previous.switchblade-cache")
     cache_dir = os.path.join(project_dir, ".switchblade-cache")
-    shutil.copytree(test_cache_dir, cache_dir, dirs_exist_ok=True)
+    copytree_posix(test_cache_dir, cache_dir)
 
     # Set the current working directory to the temp folder
     os.chdir(tmp_path)
@@ -59,7 +63,7 @@ def project_with_config_file_name(tmp_path, config_file_name):
     # Copy the contents of tests/project to the temp folder
     test_project_dir = os.path.join(os.path.dirname(__file__), "files", "testproject")
     project_dir = tmp_path
-    shutil.copytree(test_project_dir, project_dir, dirs_exist_ok=True)
+    copytree_posix(test_project_dir, project_dir)
     # Rename the config file to the name specified by the config_file_name fixture
     os.rename(os.path.join(project_dir, ".switchblade"), os.path.join(project_dir, config_file_name))
 
@@ -76,7 +80,7 @@ def project_with_bad_config(tmp_path, bad_config_file):
     # Copy the contents of tests/project to the temp folder
     test_project_dir = os.path.join(os.path.dirname(__file__), "files", "testproject")
     project_dir = tmp_path
-    shutil.copytree(test_project_dir, project_dir, dirs_exist_ok=True)
+    copytree_posix(test_project_dir, project_dir)
 
     # Copy and overwrite the config file with the bad config file
     if bad_config_file:

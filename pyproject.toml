@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sentient-switchblade"
-version = "0.3.3"
+version = "0.3.4"
 description = "Unleash Dev Tool Mastery with a Flick of Your Wrist"
 authors = ["JensRoland <mail@jensroland.com>"]
 license = "MIT"
@@ -24,7 +24,6 @@ classifiers = [
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
 ]
 
 [tool.poetry.scripts]
@@ -42,6 +41,7 @@ tomlkit = "^0.11.7"
 pytest = "^7.3.0"
 pytest-cov = "^4.0.0"
 pytest-subprocess = "^1.5.0"
+tox = "^4.5.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -145,8 +145,14 @@ Install dependencies:
 > poetry install
 ```
 
-Run unit tests:
+Run unit tests with coverage:
 
 ```shell
 > poetry run pytest -c pyproject.toml --cov-report=term --cov=src tests
+```
+
+Or run unit tests on multiple Python versions with tox:
+
+```shell
+> poetry run tox
 ```

@@ -3,6 +3,7 @@ import os
 import shutil
 
 from datetime import datetime, timezone
+from distutils.dir_util import copy_tree
 from github import Github
 from mergedeep import merge
 from pathlib import Path
@@ -138,7 +139,7 @@ class Bundle:
 
         else:
             # If the source is a local folder, copy it to the cache
-            shutil.copytree(bundle_source_uri, bundle_folder)
+            copy_tree(str(bundle_source_uri), str(bundle_folder))
 
         cache.log(f"UPDATING {remote_version} SUCCEEDED")
 
