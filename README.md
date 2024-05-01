@@ -127,7 +127,7 @@ To override the command or the list of linters to run, add the corresponding sec
 
 ## Prerequisites
 
-- [Python 3.7+](https://www.python.org/downloads/)
+- [Python 3.9+](https://www.python.org/downloads/)
 
 Currently, you need Python since you install Switchblade with pip. This may change in the future.
 
