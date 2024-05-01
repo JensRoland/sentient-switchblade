@@ -4,14 +4,13 @@ from pathlib import Path
 import pytest
 import shutil
 
-from distutils.dir_util import copy_tree
 from unittest.mock import MagicMock, Mock, patch
 
 AWS_TEST_REGION = "eu-west-1"
 
 
 def copytree_posix(posix_path_from, posix_path_to):
-    return copy_tree(str(posix_path_from), str(posix_path_to))
+    return shutil.copytree(str(posix_path_from), str(posix_path_to), dirs_exist_ok=True)
 
 def pytest_configure(config: pytest.Config) -> None:
     """Mocked AWS Credentials to prevent accidental side effects in the cloud."""
